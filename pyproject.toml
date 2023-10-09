@@ -8,6 +8,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+disnake = "^2.9.0"
+pydantic-settings = "^2.0.3"
+loguru = "^0.7.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.5.1"
