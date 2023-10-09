@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "eco"
+version = "0.1.0"
+description = "Discord's economy platform."
+authors = ["interrrp <int@addictedto.coffee>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.5.1"
+ruff = "^0.0.292"
+black = "^23.9.1"
+pre-commit = "^3.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
