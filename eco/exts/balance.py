@@ -3,7 +3,7 @@ from disnake.interactions import AppCmdInter
 from disnake.ext.commands import Cog, Bot, slash_command
 
 from eco.models import User
-from eco.database import Session
+from eco.database import SessionLocal
 from eco.utils import error, success, format_money
 
 
@@ -12,7 +12,7 @@ class Balance(Cog):
     async def balance(self, inter: AppCmdInter, member: Member) -> None:
         """Check the balance of a user."""
 
-        async with Session() as session:
+        async with SessionLocal() as session:
             user = await User.get_or_create(session, member.id)
 
         embed = Embed(
@@ -43,7 +43,7 @@ class Balance(Cog):
             )
             return
 
-        async with Session() as session:
+        async with SessionLocal() as session:
             from_ = await User.get_or_create(session, inter.author.id)
             to = await User.get_or_create(session, member.id)
 

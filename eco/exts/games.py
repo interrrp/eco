@@ -4,7 +4,7 @@ from disnake.interactions import AppCmdInter
 from disnake.ext.commands import Cog, Bot, slash_command
 
 from eco.utils import error, success, format_money
-from eco.database import Session
+from eco.database import SessionLocal
 from eco.models import User
 
 
@@ -18,7 +18,7 @@ class Games(Cog):
             return
 
         amount = uniform(1.0, 4.0)
-        async with Session() as session:
+        async with SessionLocal() as session:
             user = await User.get_or_create(session, inter.author.id)
             user.balance = User.balance + amount
             await session.commit()
