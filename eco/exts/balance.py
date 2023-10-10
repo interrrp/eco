@@ -4,6 +4,7 @@ from disnake.ext.commands import Cog, Bot, slash_command
 
 from eco.models import User
 from eco.database import Session
+from eco.utils import error, success, format_money
 
 
 class Balance(Cog):
@@ -19,6 +20,41 @@ class Balance(Cog):
         )
         embed.set_author(name=member.display_name, icon_url=member.display_avatar)
         await inter.send(embed=embed)
+
+    @slash_command()
+    async def give(self, inter: AppCmdInter, member: Member, amount: float) -> None:
+        if inter.author == member:
+            await error(inter, "To yourself?")
+            return
+
+        if amount < 0.0:
+            await error(inter, "Negative amount?")
+            return
+
+        if amount == 0.0:
+            await success(
+                inter,
+                f"{inter.author.mention} gives {member.mention} ABSOLUTELY NOTHING."
+                " Good job!",
+            )
+            return
+
+        async with Session() as session:
+            from_ = await User.get_or_create(session, inter.author.id)
+            to = await User.get_or_create(session, member.id)
+
+            if amount > from_.balance:
+                await error(inter, "You're too broke for this")
+                return
+
+            from_.balance = User.balance - amount
+            to.balance = User.balance + amount
+            await session.commit()
+
+        await success(
+            inter,
+            f"{inter.author.mention} gives {member.mention} `{format_money(amount)}`",
+        )
 
     @staticmethod
     def describe_balance(balance: float) -> str:

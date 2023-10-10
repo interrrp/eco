@@ -1,7 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from eco.settings import settings
+from eco.utils import format_money
 
 
 class Base(DeclarativeBase):
@@ -16,7 +16,7 @@ class User(Base):
 
     @property
     def balance_str(self) -> str:
-        return f"{settings.money_prefix}{self.balance:.2f}"
+        return format_money(self.balance)
 
     @staticmethod
     async def get_or_create(session: AsyncSession, id_: int) -> "User":
