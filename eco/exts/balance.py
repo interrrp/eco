@@ -10,6 +10,8 @@ from eco.utils import error, success, format_money
 class Balance(Cog):
     @slash_command()
     async def balance(self, inter: AppCmdInter, member: Member) -> None:
+        """Check the balance of a user."""
+
         async with Session() as session:
             user = await User.get_or_create(session, member.id)
 
@@ -23,6 +25,8 @@ class Balance(Cog):
 
     @slash_command()
     async def give(self, inter: AppCmdInter, member: Member, amount: float) -> None:
+        """Give someone some money."""
+
         if inter.author == member:
             await error(inter, "To yourself?")
             return
