@@ -1,12 +1,12 @@
 from random import random, uniform
 
 from disnake import Member
+from disnake.ext.commands import Bot, Cog, slash_command
 from disnake.interactions import AppCmdInter
-from disnake.ext.commands import Cog, Bot, slash_command
 
-from eco.utils import error, success, format_money
 from eco.database import SessionLocal
 from eco.models import User
+from eco.utils import error, format_money, success
 
 
 class Games(Cog):

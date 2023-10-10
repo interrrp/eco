@@ -1,10 +1,10 @@
 import asyncio
 
-from loguru import logger
 from disnake.ext.commands import InteractionBot
+from loguru import logger
 
-from eco.models import Base
 from eco.database import engine
+from eco.models import Base
 from eco.settings import settings
 
 

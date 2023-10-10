@@ -1,5 +1,5 @@
+from disnake.ext.commands import Bot, Cog
 from loguru import logger
-from disnake.ext.commands import Cog, Bot
 
 from eco.utils import BotCog
 

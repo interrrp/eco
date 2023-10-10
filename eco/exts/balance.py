@@ -1,10 +1,10 @@
 from disnake import Embed, Member
+from disnake.ext.commands import Bot, Cog, slash_command
 from disnake.interactions import AppCmdInter
-from disnake.ext.commands import Cog, Bot, slash_command
 
-from eco.models import User
 from eco.database import SessionLocal
-from eco.utils import error, success, format_money
+from eco.models import User
+from eco.utils import error, format_money, success
 
 
 class Balance(Cog):

@@ -1,6 +1,6 @@
-from disnake import Embed, Color
+from disnake import Color, Embed
+from disnake.ext.commands import Bot, Cog
 from disnake.interactions import AppCmdInter
-from disnake.ext.commands import Cog, Bot
 
 from eco.settings import settings
 

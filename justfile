@@ -11,6 +11,7 @@ lint:
 
 format:
     black eco
+    isort eco
 
 clean:
     rm -rf **/__pycache__

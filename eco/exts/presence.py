@@ -1,5 +1,5 @@
 from disnake import Game, Status
-from disnake.ext.commands import Cog, Bot
+from disnake.ext.commands import Bot, Cog
 
 from eco.utils import BotCog
 
