@@ -1,5 +1,6 @@
 from random import random, uniform
 
+from disnake import Member
 from disnake.interactions import AppCmdInter
 from disnake.ext.commands import Cog, Bot, slash_command
 
@@ -24,6 +25,31 @@ class Games(Cog):
             await session.commit()
 
         await success(inter, f"You fished and earned `{format_money(amount)}`")
+
+    @slash_command()
+    async def rob(self, inter: AppCmdInter, victim: Member) -> None:
+        """Rob a user."""
+
+        if random() < 0.8:
+            await error(
+                inter,
+                f"You got caught, and {victim.mention} ran away!",
+                ephemeral=False,
+            )
+            return
+
+        async with SessionLocal() as session:
+            victim_data = await User.get_or_create(session, victim.id)
+            robber_data = await User.get_or_create(session, inter.author.id)
+
+            amount = victim_data.balance * 0.05
+
+            victim_data.balance = User.balance - amount
+            robber_data.balance = User.balance + amount
+
+            await session.commit()
+
+        await success(inter, f"You robbed {victim.mention} of `{format_money(amount)}`")
 
 
 def setup(bot: Bot) -> None:

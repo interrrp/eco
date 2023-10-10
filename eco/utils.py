@@ -14,9 +14,10 @@ def format_money(money: float) -> str:
     return f"{settings.money_prefix}{money:.2f}"
 
 
-async def error(inter: AppCmdInter, message: str) -> None:
+async def error(inter: AppCmdInter, message: str, ephemeral: bool = True) -> None:
     await inter.send(
-        embed=Embed(description=f"🙅‍♂️ {message}", color=Color.red()), ephemeral=True
+        embed=Embed(description=f"🙅‍♂️ {message}", color=Color.red()),
+        ephemeral=ephemeral,
     )
 
 
