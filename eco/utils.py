@@ -11,7 +11,7 @@ class BotCog(Cog):
 
 
 def format_money(money: float) -> str:
-    return f"{settings.money_prefix}{money:.2f}"
+    return f"{settings.money_prefix}{money:,.2f}"
 
 
 async def error(inter: AppCmdInter, message: str, ephemeral: bool = True) -> None:

@@ -1,4 +1,5 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from eco.utils import format_money
@@ -14,6 +15,8 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     balance: Mapped[float] = mapped_column(default=500.0)
 
+    inventory: Mapped["UserInventory"] = relationship(back_populates="owner")
+
     @property
     def balance_str(self) -> str:
         return format_money(self.balance)
@@ -28,3 +31,25 @@ class User(Base):
             session.add(user)
             await session.commit()
             return user
+
+
+class UserInventory(Base):
+    __tablename__ = "user_inventories"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    item_id: Mapped[int] = mapped_column(ForeignKey("shop_items.id"))
+
+    owner: Mapped[User] = relationship(back_populates="inventory")
+    item: Mapped["ShopItem"] = relationship(back_populates="owners", lazy="selectin")
+
+
+class ShopItem(Base):
+    __tablename__ = "shop_items"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(unique=True)
+    description: Mapped[str] = mapped_column()
+    price: Mapped[float] = mapped_column()
+
+    owners: Mapped[UserInventory] = relationship(back_populates="item")
