@@ -1,11 +1,11 @@
 from random import random, uniform
 
-from disnake import Member
-from disnake.ext.commands import Bot, BucketType, Cog, cooldown, slash_command
+import disnake
+from disnake.ext.commands import Bot, BucketType, Cog, Param, cooldown, slash_command
 from disnake.interactions import AppCmdInter
 
+from eco import models
 from eco.database import SessionLocal
-from eco.models import User
 from eco.utils import error, format_money, success
 
 
@@ -21,15 +21,23 @@ class Games(Cog):
 
         amount = uniform(1.0, 4.0)
         async with SessionLocal() as session:
-            user = await User.get_or_create(session, inter.author.id)
-            user.balance = User.balance + amount
+            user = await models.User.get_or_create(session, inter.author.id)
+            user.balance = models.User.balance + amount
             await session.commit()
 
         await success(inter, f"You fished and earned `{format_money(amount)}`")
 
     @slash_command()
-    async def rob(self, inter: AppCmdInter, victim: Member) -> None:
+    async def rob(
+        self,
+        inter: AppCmdInter,
+        victim: disnake.User = Param(description="The unlucky user"),
+    ) -> None:
         """Rob a user."""
+
+        if inter.author == victim:
+            await error(inter, "You can't rob yourself...")
+            return
 
         if random() < 0.8:
             await error(
@@ -40,13 +48,13 @@ class Games(Cog):
             return
 
         async with SessionLocal() as session:
-            victim_data = await User.get_or_create(session, victim.id)
-            robber_data = await User.get_or_create(session, inter.author.id)
+            victim_data = await models.User.get_or_create(session, victim.id)
+            robber_data = await models.User.get_or_create(session, inter.author.id)
 
             amount = victim_data.balance * 0.05
 
-            victim_data.balance = User.balance - amount
-            robber_data.balance = User.balance + amount
+            victim_data.balance = models.User.balance - amount
+            robber_data.balance = models.User.balance + amount
 
             await session.commit()
 

@@ -1,33 +1,54 @@
+import disnake
 from disnake import Embed, Member
-from disnake.ext.commands import Bot, Cog, slash_command
+from disnake.ext.commands import Bot, Cog, Param, slash_command
 from disnake.interactions import AppCmdInter
 
+from eco import models
 from eco.database import SessionLocal
-from eco.models import User
 from eco.utils import error, format_money, success
 
 
 class Balance(Cog):
     @slash_command()
-    async def balance(self, inter: AppCmdInter, member: Member) -> None:
+    async def balance(
+        self,
+        inter: AppCmdInter,
+        user: disnake.User
+        | Member
+        | None = Param(
+            description="The user to check the balance of. If not specified, it's you.",
+            default=None,
+        ),
+    ) -> None:
         """Check the balance of a user."""
 
+        if user is None:
+            user = inter.author
+
         async with SessionLocal() as session:
-            user = await User.get_or_create(session, member.id)
+            user_data = await models.User.get_or_create(session, user.id)
 
         embed = Embed(
-            title=f"{member.display_name}'s balance",
-            description=f"{self.describe_balance(user.balance)}\n```\n{user.balance_str}```",
-            color=member.accent_color,
+            title=f"{user.display_name}'s balance",
+            description=(
+                f"{self.describe_balance(user_data.balance)}\n"
+                f"```\n{user_data.balance_fmt}```"
+            ),
+            color=user.accent_color,
         )
-        embed.set_author(name=member.display_name, icon_url=member.display_avatar)
+        embed.set_author(name=user.display_name, icon_url=user.display_avatar)
         await inter.send(embed=embed)
 
     @slash_command()
-    async def give(self, inter: AppCmdInter, member: Member, amount: float) -> None:
+    async def give(
+        self,
+        inter: AppCmdInter,
+        user: disnake.User = Param(description="The lucky user"),
+        amount: float = Param(description="The amount of money to give them"),
+    ) -> None:
         """Give someone some money."""
 
-        if inter.author == member:
+        if inter.author == user:
             await error(inter, "To yourself?")
             return
 
@@ -38,26 +59,26 @@ class Balance(Cog):
         if amount == 0.0:
             await success(
                 inter,
-                f"{inter.author.mention} gives {member.mention} ABSOLUTELY NOTHING."
+                f"{inter.author.mention} gives {user.mention} ABSOLUTELY NOTHING."
                 " Good job!",
             )
             return
 
         async with SessionLocal() as session:
-            from_ = await User.get_or_create(session, inter.author.id)
-            to = await User.get_or_create(session, member.id)
+            from_ = await models.User.get_or_create(session, inter.author.id)
+            to = await models.User.get_or_create(session, user.id)
 
             if amount > from_.balance:
                 await error(inter, "You're too broke for this")
                 return
 
-            from_.balance = User.balance - amount
-            to.balance = User.balance + amount
+            from_.balance = models.User.balance - amount
+            to.balance = models.User.balance + amount
             await session.commit()
 
         await success(
             inter,
-            f"{inter.author.mention} gives {member.mention} `{format_money(amount)}`",
+            f"{inter.author.mention} gives {user.mention} `{format_money(amount)}`",
         )
 
     @staticmethod

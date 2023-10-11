@@ -18,7 +18,7 @@ class User(Base):
     inventory: Mapped["UserInventory"] = relationship(back_populates="owner")
 
     @property
-    def balance_str(self) -> str:
+    def balance_fmt(self) -> str:
         return format_money(self.balance)
 
     @staticmethod

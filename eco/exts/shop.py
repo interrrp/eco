@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from disnake import Embed
-from disnake.ext.commands import Bot, Cog, slash_command
+from disnake.ext.commands import Bot, Cog, Param, slash_command
 from disnake.interactions import AppCmdInter
 from sqlalchemy import select
 
@@ -28,7 +28,12 @@ class Shop(Cog):
         await inter.send(embed=embed)
 
     @slash_command()
-    async def buy(self, inter: AppCmdInter, id_: int, amount: int = 1) -> None:
+    async def buy(
+        self,
+        inter: AppCmdInter,
+        id_: int = Param(name="id", description="The ID of the item"),
+        quantity: int = Param(description="The quantity of the item", default=1, ge=1),
+    ) -> None:
         """Buy a shop item."""
 
         async with SessionLocal() as session:
@@ -38,20 +43,20 @@ class Shop(Cog):
                 await error(inter, "Invalid item ID")
                 return
 
-            if item.price * amount > user.balance:
+            if item.price * quantity > user.balance:
                 await error(inter, "You're too broke for this item")
                 return
 
-            for _ in range(amount):
-                user.balance = User.balance - item.price * amount
+            for _ in range(quantity):
+                user.balance = User.balance - item.price * quantity
                 session.add(UserInventory(user_id=user.id, item_id=item.id))
 
             await session.commit()
 
         await success(
             inter,
-            f"You've bought {amount}x _{item.name}_ for"
-            f" `{format_money(item.price * amount)}`",
+            f"You've bought {quantity}x _{item.name}_ for"
+            f" `{format_money(item.price * quantity)}`",
         )
 
     @slash_command()
