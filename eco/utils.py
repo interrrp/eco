@@ -1,7 +1,8 @@
-from disnake import Color, Embed
+from disnake import Embed
 from disnake.ext.commands import Bot, Cog
 from disnake.interactions import AppCmdInter
 
+from eco.colors import GREEN, RED
 from eco.settings import settings
 
 
@@ -16,10 +17,10 @@ def format_money(money: float) -> str:
 
 async def error(inter: AppCmdInter, message: str, ephemeral: bool = True) -> None:
     await inter.send(
-        embed=Embed(description=f"🙅‍♂️ {message}", color=Color.red()),
+        embed=Embed(description=f"🙅‍♂️ {message}", color=RED),
         ephemeral=ephemeral,
     )
 
 
 async def success(inter: AppCmdInter, message: str) -> None:
-    await inter.send(embed=Embed(description=f"👍 {message}", color=Color.green()))
+    await inter.send(embed=Embed(description=f"👍 {message}", color=GREEN))
