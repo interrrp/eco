@@ -1,3 +1,5 @@
+from time import time
+
 from disnake.ext.commands import Bot, Cog, CommandError, CommandOnCooldown
 from disnake.interactions import AppCmdInter
 from loguru import logger
@@ -11,7 +13,11 @@ class ErrorHandler(Cog):
         self, inter: AppCmdInter, err: CommandError
     ) -> None:
         if isinstance(err, CommandOnCooldown):
-            await error(inter, str(err))
+            await error(
+                inter,
+                f"Slow down buddy, you're on cooldown. Try again"
+                f" <t:{round(time() + err.retry_after)}:R>",
+            )
         else:
             logger.error(err)
             await error(
