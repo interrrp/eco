@@ -15,7 +15,7 @@ class Games(Cog):
         """Fish and earn money. A small amount of money, but it's money after all."""
 
         if random() < 0.3:
-            await error(inter, "No luck...")
+            await error(inter, "No luck...", ephemeral=False)
             return
 
         amount = uniform(1.0, 4.0)
