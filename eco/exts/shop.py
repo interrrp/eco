@@ -28,7 +28,7 @@ class Shop(Cog):
         await inter.send(embed=embed)
 
     @slash_command()
-    async def buy(self, inter: AppCmdInter, id_: int) -> None:
+    async def buy(self, inter: AppCmdInter, id_: int, amount: int = 1) -> None:
         """Buy a shop item."""
 
         async with SessionLocal() as session:
@@ -38,14 +38,20 @@ class Shop(Cog):
                 await error(inter, "Invalid item ID")
                 return
 
-            user.balance = User.balance - item.price
+            if item.price * amount > user.balance:
+                await error(inter, "You're too broke for this item")
+                return
 
-            session.add(UserInventory(user_id=user.id, item_id=item.id))
+            for _ in range(amount):
+                user.balance = User.balance - item.price * amount
+                session.add(UserInventory(user_id=user.id, item_id=item.id))
 
             await session.commit()
 
         await success(
-            inter, f"You've bought _{item.name}_ for `{format_money(item.price)}`"
+            inter,
+            f"You've bought {amount}x _{item.name}_ for"
+            f" `{format_money(item.price * amount)}`",
         )
 
     @slash_command()
