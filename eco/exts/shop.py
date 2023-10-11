@@ -18,8 +18,7 @@ class Shop(Cog):
         embed = Embed(title="Shop", description="Stuff we're selling")
 
         async with SessionLocal() as session:
-            items: Sequence[ShopItem] = (await session.scalars(select(ShopItem))).all()
-            for item in items:
+            for item in await ShopItem.all(session):
                 embed.add_field(
                     f"{item.id} - {item.name}",
                     f"`{format_money(item.price)}` - {item.description}",

@@ -1,4 +1,6 @@
-from sqlalchemy import ForeignKey
+from typing import Sequence
+
+from sqlalchemy import ForeignKey, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -53,3 +55,7 @@ class ShopItem(Base):
     price: Mapped[float] = mapped_column()
 
     owners: Mapped[UserInventory] = relationship(back_populates="item")
+
+    @staticmethod
+    async def all(session: AsyncSession) -> Sequence["ShopItem"]:
+        return (await session.scalars(select(ShopItem))).all()
