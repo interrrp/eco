@@ -15,7 +15,7 @@ async def main() -> None:
     logger.info("Finished creating tables")
 
     logger.info("Starting bot")
-    bot = InteractionBot()
+    bot = InteractionBot(test_guilds=settings.test_guild_ids)
     bot.load_extensions("eco/exts")
     await bot.start(settings.token)
 

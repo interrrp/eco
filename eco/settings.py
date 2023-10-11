@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     token: str
+    test_guild_ids: list[int] = []
     database_url: PostgresDsn = PostgresDsn(
         "postgresql+asyncpg://postgres:postgres@localhost/eco"
     )
