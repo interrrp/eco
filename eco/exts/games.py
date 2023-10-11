@@ -1,7 +1,7 @@
 from random import random, uniform
 
 from disnake import Member
-from disnake.ext.commands import Bot, Cog, slash_command
+from disnake.ext.commands import Bot, BucketType, Cog, cooldown, slash_command
 from disnake.interactions import AppCmdInter
 
 from eco.database import SessionLocal
@@ -11,6 +11,7 @@ from eco.utils import error, format_money, success
 
 class Games(Cog):
     @slash_command()
+    @cooldown(1, 30, BucketType.user)
     async def fish(self, inter: AppCmdInter) -> None:
         """Fish and earn money. A small amount of money, but it's money after all."""
 
