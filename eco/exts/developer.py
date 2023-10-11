@@ -1,15 +1,29 @@
+from typing import Callable, Coroutine
+
 import disnake
-from disnake.ext.commands import Bot, Cog, Param, is_owner, slash_command
+from disnake.ext.commands import (
+    Bot,
+    Cog,
+    InvokableSlashCommand,
+    Param,
+    slash_command,
+)
 from disnake.interactions import AppCmdInter
 
 from eco import models
 from eco.database import SessionLocal
+from eco.settings import settings
 from eco.utils import format_money, success
 
 
+def dev_slash_command(
+    **kwargs,
+) -> Callable[[Callable[..., Coroutine]], InvokableSlashCommand]:
+    return slash_command(**kwargs, guild_ids=settings.test_guild_ids)
+
+
 class Developer(Cog):
-    @slash_command()
-    @is_owner()
+    @dev_slash_command()
     async def print_money(
         self,
         inter: AppCmdInter,
@@ -29,8 +43,7 @@ class Developer(Cog):
             f" {user.mention}. Good job, you criminal.",
         )
 
-    @slash_command()
-    @is_owner()
+    @dev_slash_command()
     async def create_shop_item(
         self,
         inter: AppCmdInter,
