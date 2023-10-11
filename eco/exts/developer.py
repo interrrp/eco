@@ -29,6 +29,25 @@ class Developer(Cog):
             f" {user.mention}. Good job, you criminal.",
         )
 
+    @slash_command()
+    @is_owner()
+    async def create_shop_item(
+        self,
+        inter: AppCmdInter,
+        name: str = Param(description="The name of the item"),
+        description: str = Param(description="The description of the item"),
+        price: float = Param(description="How much the item costs"),
+    ):
+        """Create a shop item."""
+
+        async with SessionLocal() as session:
+            session.add(
+                models.ShopItem(name=name, description=description, price=price)
+            )
+            await session.commit()
+
+        await success(inter, f"Put up _{name}_ for `{format_money(price)}` on the shop")
+
 
 def setup(bot: Bot) -> None:
     bot.add_cog(Developer())
