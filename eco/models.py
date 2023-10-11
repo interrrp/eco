@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from sqlalchemy import ForeignKey, select
+from sqlalchemy import BigInteger, ForeignKey, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -14,7 +14,7 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     balance: Mapped[float] = mapped_column(default=500.0)
 
     inventory: Mapped["UserInventory"] = relationship(back_populates="owner")
