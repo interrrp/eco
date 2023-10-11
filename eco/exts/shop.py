@@ -57,13 +57,21 @@ class Shop(Cog):
             name=inter.author.display_name, icon_url=inter.author.display_avatar
         )
 
+        item_count: dict[ShopItem, int] = {}
+
         async with SessionLocal() as session:
             query = select(UserInventory).where(
                 UserInventory.user_id == inter.author.id
             )
             items: Sequence[UserInventory] = (await session.scalars(query)).all()
             for item in items:
-                embed.add_field(item.item.name, item.item.description)
+                if item.item not in item_count:
+                    item_count[item.item] = 1
+                    continue
+                item_count[item.item] += 1
+
+        for inv_item, count in item_count.items():
+            embed.add_field(f"{count}x {inv_item.name}", inv_item.description)
 
         await inter.send(embed=embed)
 
