@@ -4,8 +4,8 @@ from disnake import AllowedMentions
 from disnake.ext.commands import InteractionBot
 from loguru import logger
 
+from admin.settings import settings
 from common.models import create_tables
-from common.settings import settings
 
 
 async def main() -> None:
@@ -18,8 +18,9 @@ async def main() -> None:
         test_guilds=settings.test_guild_ids, allowed_mentions=AllowedMentions.none()
     )
     bot.load_extensions("common/exts")
-    bot.load_extensions("eco/exts")
-    await bot.start(settings.token)
+    bot.load_extensions("admin/exts")
+    await bot.start(settings.admin_token)
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

@@ -4,9 +4,9 @@ import disnake
 from disnake.ext.commands import Bot, BucketType, Cog, Param, cooldown, slash_command
 from disnake.interactions import AppCmdInter
 
-from eco import models
-from eco.database import SessionLocal
-from eco.utils import error, format_money, success
+from common import models
+from common.database import SessionLocal
+from common.utils import error, format_money, success
 
 
 class Games(Cog):

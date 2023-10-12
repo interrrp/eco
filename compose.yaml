@@ -7,6 +7,16 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@database/eco
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@database/eco
   database:
     image: postgres:alpine
     environment:

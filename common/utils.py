@@ -2,8 +2,8 @@ from disnake import Embed
 from disnake.ext.commands import Bot, Cog
 from disnake.interactions import AppCmdInter
 
-from eco.colors import GREEN, RED
-from eco.settings import settings
+from common.colors import GREEN, RED
+from common.settings import settings
 
 
 class BotCog(Cog):

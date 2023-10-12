@@ -6,9 +6,9 @@ from disnake.interactions import AppCmdInter
 from disnake.utils import escape_markdown
 from sqlalchemy import select
 
-from eco import models
-from eco.database import SessionLocal
-from eco.utils import format_money, success
+from common import models
+from common.database import SessionLocal
+from common.utils import format_money, success
 
 
 class Loan(Cog):

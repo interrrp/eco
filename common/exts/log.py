@@ -1,7 +1,7 @@
 from disnake.ext.commands import Bot, Cog
 from loguru import logger
 
-from eco.utils import BotCog
+from common.utils import BotCog
 
 
 class Log(BotCog):

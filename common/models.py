@@ -4,7 +4,8 @@ from sqlalchemy import BigInteger, ForeignKey, String, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from eco.utils import format_money
+from common.database import engine
+from common.utils import format_money
 
 
 class Base(DeclarativeBase):
@@ -68,7 +69,7 @@ class LoanRequest(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     amount: Mapped[int] = mapped_column()
-    application: Mapped[str] = mapped_column(String(500))
+    application: Mapped[str] = mapped_column(String(100))
 
     user: Mapped[User] = relationship(back_populates="loan_requests", lazy="selectin")
 
@@ -80,3 +81,8 @@ class LoanRequest(Base):
     async def reject(self, session: AsyncSession) -> None:
         await session.delete(self)
         await session.commit()
+
+
+async def create_tables() -> None:
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)

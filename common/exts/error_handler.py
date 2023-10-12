@@ -4,7 +4,7 @@ from disnake.ext.commands import Bot, Cog, CommandError, CommandOnCooldown
 from disnake.interactions import AppCmdInter
 from loguru import logger
 
-from eco.utils import error
+from common.utils import error
 
 
 class ErrorHandler(Cog):

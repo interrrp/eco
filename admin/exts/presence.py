@@ -8,7 +8,7 @@ class Presence(BotCog):
     @Cog.listener()
     async def on_ready(self) -> None:
         await self.bot.change_presence(
-            activity=Game("with the economy"), status=Status.idle
+            activity=Game("with the users"), status=Status.idle
         )
 
 

@@ -3,9 +3,9 @@ from disnake import Embed, Member
 from disnake.ext.commands import Bot, Cog, Param, slash_command
 from disnake.interactions import AppCmdInter
 
-from eco import models
-from eco.database import SessionLocal
-from eco.utils import error, format_money, success
+from common import models
+from common.database import SessionLocal
+from common.utils import error, format_money, success
 
 
 class Balance(Cog):

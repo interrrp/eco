@@ -5,9 +5,9 @@ from disnake.ext.commands import Bot, Cog, Param, slash_command
 from disnake.interactions import AppCmdInter
 from sqlalchemy import select
 
-from eco.database import SessionLocal
-from eco.models import ShopItem, User, UserInventory
-from eco.utils import error, format_money, success
+from common.database import SessionLocal
+from common.models import ShopItem, User, UserInventory
+from common.utils import error, format_money, success
 
 
 class Shop(Cog):
