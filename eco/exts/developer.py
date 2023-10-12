@@ -1,19 +1,20 @@
-from typing import Callable, Coroutine
+from typing import Callable, Coroutine, Sequence
 
 import disnake
+from disnake import Embed
 from disnake.ext.commands import (
     Bot,
-    Cog,
     InvokableSlashCommand,
     Param,
     slash_command,
 )
 from disnake.interactions import AppCmdInter
+from sqlalchemy import select
 
 from eco import models
 from eco.database import SessionLocal
 from eco.settings import settings
-from eco.utils import format_money, success
+from eco.utils import BotCog, error, format_money, success
 
 
 def dev_slash_command(
@@ -22,7 +23,7 @@ def dev_slash_command(
     return slash_command(**kwargs, guild_ids=settings.test_guild_ids)
 
 
-class Developer(Cog):
+class Developer(BotCog):
     @dev_slash_command()
     async def print_money(
         self,
@@ -61,6 +62,74 @@ class Developer(Cog):
 
         await success(inter, f"Put up _{name}_ for `{format_money(price)}` on the shop")
 
+    @dev_slash_command()
+    async def approve_loan(
+        self,
+        inter: AppCmdInter,
+        id_: int = Param(name="id", description="The ID of the loan"),
+    ) -> None:
+        """Approve a loan."""
+
+        async with SessionLocal() as session:
+            request = await session.get(models.LoanRequest, id_)
+            if request is None:
+                await error(inter, "Invalid loan ID")
+                return
+
+            await request.approve(session)
+
+        user = await self.bot.fetch_user(request.user_id)
+        await user.send(
+            f"🎉 Your loan for `{format_money(request.amount)}` got approved!"
+        )
+
+        await success(
+            inter, f"Approved loan `{id_}` for `{format_money(request.amount)}`"
+        )
+
+    @dev_slash_command()
+    async def reject_loan(
+        self,
+        inter: AppCmdInter,
+        id_: int = Param(name="id", description="The ID of the loan"),
+    ) -> None:
+        """Reject a loan."""
+
+        async with SessionLocal() as session:
+            request = await session.get(models.LoanRequest, id_)
+            if request is None:
+                await error(inter, "Invalid loan ID")
+                return
+
+            await request.reject(session)
+
+        user = await self.bot.fetch_user(request.user_id)
+        await user.send(
+            f"😭 Your loan for `{format_money(request.amount)}` got rejected."
+        )
+
+        await success(
+            inter, f"Rejected loan `{id_}` for `{format_money(request.amount)}`"
+        )
+
+    @dev_slash_command()
+    async def all_pending_loans(self, inter: AppCmdInter) -> None:
+        """List all pending loans."""
+
+        embed = Embed(title="All pending loans")
+
+        async with SessionLocal() as session:
+            loans: Sequence[models.LoanRequest] = (
+                await session.scalars(select(models.LoanRequest))
+            ).all()
+            for loan in loans:
+                embed.add_field(
+                    f"{loan.id} - {format_money(loan.amount)} - {loan.user_id}",
+                    loan.application,
+                )
+
+        await inter.send(embed=embed)
+
 
 def setup(bot: Bot) -> None:
-    bot.add_cog(Developer())
+    bot.add_cog(Developer(bot))
