@@ -1,6 +1,6 @@
 import asyncio
 
-from disnake import AllowedMentions
+from disnake import AllowedMentions, Game, Status
 from disnake.ext.commands import InteractionBot
 from loguru import logger
 
@@ -15,7 +15,10 @@ async def main() -> None:
 
     logger.info("Starting bot")
     bot = InteractionBot(
-        test_guilds=settings.test_guild_ids, allowed_mentions=AllowedMentions.none()
+        activity=Game("with the users"),
+        status=Status.idle,
+        test_guilds=settings.test_guild_ids,
+        allowed_mentions=AllowedMentions.none(),
     )
     bot.load_extensions("common/exts")
     bot.load_extensions("admin/exts")
