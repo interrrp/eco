@@ -7,7 +7,7 @@ from disnake.ext.commands import InteractionBot
 from loguru import logger
 
 from common.models import create_tables
-from common.settings import settings
+from eco.settings import settings
 
 
 async def main() -> None:

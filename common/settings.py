@@ -15,7 +15,6 @@ class Settings(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", extra="allow"
     )
 
-    token: str
     test_guild_ids: list[int] | None = None
     database_url: PostgresDsn = PostgresDsn(
         "postgresql+asyncpg://postgres:postgres@localhost/eco"
