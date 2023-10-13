@@ -8,7 +8,7 @@ from disnake.interactions import AppCmdInter
 from sqlalchemy import select
 
 from common.database import SessionLocal
-from common.models import ShopItem, User, UserInventory
+from common.models import Account, ShopItem, UserInventory
 from common.utils import error, format_money, success
 
 
@@ -38,19 +38,20 @@ class Shop(Cog):
     ) -> None:
         """Buy a shop item."""
         async with SessionLocal() as session:
-            user = await User.get_or_create(session, inter.author.id)
+            account = await Account.get_or_create(session, inter.author.id)
+
             item = await session.get(ShopItem, id_)
             if item is None:
                 await error(inter, "Invalid item ID")
                 return
 
-            if item.price * quantity > user.balance:
+            if item.price * quantity > account.balance:
                 await error(inter, "You're too broke for this item")
                 return
 
             for _ in range(quantity):
-                user.balance = User.balance - item.price * quantity
-                session.add(UserInventory(user_id=user.id, item_id=item.id))
+                account.balance = Account.balance - item.price * quantity
+                session.add(UserInventory(user_id=account.user_id, item_id=item.id))
 
             await session.commit()
 

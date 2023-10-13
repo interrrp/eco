@@ -16,12 +16,12 @@ class Base(DeclarativeBase):
     pass
 
 
-class User(Base):
-    """A user."""
+class Account(Base):
+    """A user account."""
 
-    __tablename__ = "users"
+    __tablename__ = "accounts"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     balance: Mapped[float] = mapped_column(default=500.0)
 
     inventory: Mapped["UserInventory"] = relationship(back_populates="owner")
@@ -33,11 +33,11 @@ class User(Base):
         return format_money(self.balance)
 
     @staticmethod
-    async def get_or_create(session: AsyncSession, id_: int) -> "User":
-        """Get or create a user if they don't exist yet."""
-        user = await session.get(User, id_)
+    async def get_or_create(session: AsyncSession, id_: int) -> "Account":
+        """Get or create a user account if it doesn't exist yet."""
+        user = await session.get(Account, id_)
         if user is None:
-            user = User(id=id_)
+            user = Account(id=id_)
             session.add(user)
             await session.commit()
         return user
@@ -49,10 +49,10 @@ class UserInventory(Base):
     __tablename__ = "user_inventories"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("accounts.user_id"), index=True)
     item_id: Mapped[int] = mapped_column(ForeignKey("shop_items.id"))
 
-    owner: Mapped[User] = relationship(back_populates="inventory")
+    owner: Mapped[Account] = relationship(back_populates="inventory")
     item: Mapped["ShopItem"] = relationship(back_populates="owners", lazy="selectin")
 
 
@@ -80,15 +80,17 @@ class LoanRequest(Base):
     __tablename__ = "loan_requests"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("accounts.user_id"), index=True)
     amount: Mapped[int] = mapped_column()
     application: Mapped[str] = mapped_column(String(100))
 
-    user: Mapped[User] = relationship(back_populates="loan_requests", lazy="selectin")
+    user: Mapped[Account] = relationship(
+        back_populates="loan_requests", lazy="selectin"
+    )
 
     async def approve(self, session: AsyncSession) -> None:
         """Approve this loan request."""
-        self.user.balance = User.balance + self.amount
+        self.user.balance = Account.balance + self.amount
         await session.delete(self)
         await session.commit()
 

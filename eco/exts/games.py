@@ -2,12 +2,12 @@
 
 from random import random, uniform
 
-import disnake
+from disnake import User
 from disnake.ext.commands import Bot, BucketType, Cog, Param, cooldown, slash_command
 from disnake.interactions import AppCmdInter
 
-from common import models
 from common.database import SessionLocal
+from common.models import Account
 from common.utils import error, format_money, success
 
 
@@ -24,8 +24,8 @@ class Games(Cog):
 
         amount = uniform(1.0, 4.0)
         async with SessionLocal() as session:
-            user = await models.User.get_or_create(session, inter.author.id)
-            user.balance = models.User.balance + amount
+            account = await Account.get_or_create(session, inter.author.id)
+            account.balance = Account.balance + amount
             await session.commit()
 
         await success(inter, f"You fished and earned `{format_money(amount)}`")
@@ -34,7 +34,7 @@ class Games(Cog):
     async def rob(
         self,
         inter: AppCmdInter,
-        victim: disnake.User = Param(description="The unlucky user"),
+        victim: User = Param(description="The unlucky user"),
     ) -> None:
         """Rob a user."""
         if inter.author == victim:
@@ -50,13 +50,13 @@ class Games(Cog):
             return
 
         async with SessionLocal() as session:
-            victim_data = await models.User.get_or_create(session, victim.id)
-            robber_data = await models.User.get_or_create(session, inter.author.id)
+            victim_account = await Account.get_or_create(session, victim.id)
+            robber_account = await Account.get_or_create(session, inter.author.id)
 
-            amount = victim_data.balance * 0.05
+            amount = victim_account.balance * 0.05
 
-            victim_data.balance = models.User.balance - amount
-            robber_data.balance = models.User.balance + amount
+            victim_account.balance = Account.balance - amount
+            robber_account.balance = Account.balance + amount
 
             await session.commit()
 

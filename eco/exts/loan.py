@@ -8,8 +8,8 @@ from disnake.interactions import AppCmdInter
 from disnake.utils import escape_markdown
 from sqlalchemy import select
 
-from common import models
 from common.database import SessionLocal
+from common.models import Account, LoanRequest
 from common.utils import format_money, success
 
 
@@ -32,14 +32,10 @@ class Loan(Cog):
         )
 
         async with SessionLocal() as session:
-            await models.User.get_or_create(session, inter.author.id)
+            await Account.get_or_create(session, inter.author.id)
 
-            query = select(models.LoanRequest).where(
-                models.LoanRequest.user_id == inter.author.id
-            )
-            requests: Sequence[models.LoanRequest] = (
-                await session.scalars(query)
-            ).all()
+            query = select(LoanRequest).where(LoanRequest.user_id == inter.author.id)
+            requests: Sequence[LoanRequest] = (await session.scalars(query)).all()
 
             for request in requests:
                 embed.add_field(
@@ -59,7 +55,7 @@ class Loan(Cog):
         """Request a loan."""
         async with SessionLocal() as session:
             session.add(
-                models.LoanRequest(
+                LoanRequest(
                     user_id=inter.author.id, amount=amount, application=application
                 )
             )

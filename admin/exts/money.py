@@ -1,11 +1,11 @@
 """Money commands."""
 
-import disnake
+from disnake import User
 from disnake.ext.commands import Bot, Cog, Param, slash_command
 from disnake.interactions import AppCmdInter
 
-from common import models
 from common.database import SessionLocal
+from common.models import Account
 from common.utils import error, format_money, success
 
 
@@ -21,7 +21,7 @@ class Money(Cog):
     async def add(
         self,
         inter: AppCmdInter,
-        user: disnake.User = Param(description="The user to give the money to"),
+        user: User = Param(description="The user to give the money to"),
         amount: float = Param(description="The amount of money"),
     ) -> None:
         """Add money to a user."""
@@ -30,8 +30,8 @@ class Money(Cog):
             return
 
         async with SessionLocal() as session:
-            user_data = await models.User.get_or_create(session, user.id)
-            user_data.balance = models.User.balance + amount
+            account = await Account.get_or_create(session, user.id)
+            account.balance = Account.balance + amount
             await session.commit()
 
         await success(inter, f"Added `{format_money(amount)}` into their account")
@@ -40,7 +40,7 @@ class Money(Cog):
     async def subtract(
         self,
         inter: AppCmdInter,
-        user: disnake.User = Param(description="The user to take the money from"),
+        user: User = Param(description="The user to take the money from"),
         amount: float = Param(description="The amount of money"),
     ) -> None:
         """Subtract money from a user."""
@@ -49,11 +49,11 @@ class Money(Cog):
             return
 
         async with SessionLocal() as session:
-            user_data = await models.User.get_or_create(session, user.id)
-            if user_data.balance < amount:
+            account = await Account.get_or_create(session, user.id)
+            if account.balance < amount:
                 await error(inter, "User doesn't have enough money")
                 return
-            user_data.balance = models.User.balance - amount
+            account.balance = Account.balance - amount
             await session.commit()
 
         await success(inter, f"Subtracted `{format_money(amount)}` from their account")

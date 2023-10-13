@@ -1,12 +1,11 @@
 """Loads the Balance cog."""
 
-import disnake
-from disnake import Embed, Member
+from disnake import Embed, Member, User
 from disnake.ext.commands import Bot, Cog, Param, slash_command
 from disnake.interactions import AppCmdInter
 
-from common import models
 from common.database import SessionLocal
+from common.models import Account
 from common.utils import error, format_money, success
 
 
@@ -17,7 +16,7 @@ class Balance(Cog):
     async def balance(
         self,
         inter: AppCmdInter,
-        user: disnake.User
+        user: User
         | Member
         | None = Param(
             description="The user to check the balance of. If not specified, it's you.",
@@ -29,13 +28,13 @@ class Balance(Cog):
             user = inter.author
 
         async with SessionLocal() as session:
-            user_data = await models.User.get_or_create(session, user.id)
+            account = await Account.get_or_create(session, user.id)
 
         embed = Embed(
             title=f"{user.display_name}'s balance",
             description=(
-                f"{self.describe_balance(user_data.balance)}\n"
-                f"```\n{user_data.balance_fmt}```"
+                f"{self.describe_balance(account.balance)}\n"
+                f"```\n{account.balance_fmt}```"
             ),
             color=user.accent_color,
         )
@@ -46,7 +45,7 @@ class Balance(Cog):
     async def give(
         self,
         inter: AppCmdInter,
-        user: disnake.User = Param(description="The lucky user"),
+        user: User = Param(description="The lucky user"),
         amount: float = Param(description="The amount of money to give them"),
     ) -> None:
         """Give someone some money."""
@@ -67,15 +66,15 @@ class Balance(Cog):
             return
 
         async with SessionLocal() as session:
-            from_ = await models.User.get_or_create(session, inter.author.id)
-            to = await models.User.get_or_create(session, user.id)
+            from_ = await Account.get_or_create(session, inter.author.id)
+            to = await Account.get_or_create(session, user.id)
 
             if amount > from_.balance:
                 await error(inter, "You're too broke for this")
                 return
 
-            from_.balance = models.User.balance - amount
-            to.balance = models.User.balance + amount
+            from_.balance = Account.balance - amount
+            to.balance = Account.balance + amount
             await session.commit()
 
         await success(
