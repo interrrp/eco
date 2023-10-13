@@ -33,11 +33,11 @@ class Account(Base):
         return format_money(self.balance)
 
     @staticmethod
-    async def get_or_create(session: AsyncSession, id_: int) -> "Account":
+    async def get_or_create(session: AsyncSession, user_id: int) -> "Account":
         """Get or create a user account if it doesn't exist yet."""
-        user = await session.get(Account, id_)
+        user = await session.get(Account, user_id)
         if user is None:
-            user = Account(id=id_)
+            user = Account(user_id=user_id)
             session.add(user)
             await session.commit()
         return user
