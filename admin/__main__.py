@@ -1,3 +1,5 @@
+"""The entrypoint."""
+
 import asyncio
 
 from disnake import AllowedMentions, Game, Status
@@ -9,6 +11,7 @@ from common.models import create_tables
 
 
 async def main() -> None:
+    """Start the bot."""
     logger.info("Creating tables")
     await create_tables()
     logger.info("Finished creating tables")

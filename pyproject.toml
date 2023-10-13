@@ -21,7 +21,10 @@ black = "^23.9.1"
 pre-commit = "^3.4.0"
 
 [tool.ruff]
-select = ["E", "F", "I"]
+select = ["E", "F", "I", "D"]
+
+[tool.mypy]
+allow_untyped_defs = false
 
 [build-system]
 requires = ["poetry-core"]

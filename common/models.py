@@ -1,3 +1,5 @@
+"""Database models."""
+
 from typing import Sequence
 
 from sqlalchemy import BigInteger, ForeignKey, String, select
@@ -9,10 +11,14 @@ from common.utils import format_money
 
 
 class Base(DeclarativeBase):
+    """Base class for all models."""
+
     pass
 
 
 class User(Base):
+    """A user."""
+
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
@@ -23,21 +29,23 @@ class User(Base):
 
     @property
     def balance_fmt(self) -> str:
+        """Return the formatted balance using format_money."""
         return format_money(self.balance)
 
     @staticmethod
     async def get_or_create(session: AsyncSession, id_: int) -> "User":
+        """Get or create a user if they don't exist yet."""
         user = await session.get(User, id_)
-        if user is not None:
-            return user
-        else:
+        if user is None:
             user = User(id=id_)
             session.add(user)
             await session.commit()
-            return user
+        return user
 
 
 class UserInventory(Base):
+    """An item in a user's inventory."""
+
     __tablename__ = "user_inventories"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
@@ -49,6 +57,8 @@ class UserInventory(Base):
 
 
 class ShopItem(Base):
+    """An item in the shop."""
+
     __tablename__ = "shop_items"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
@@ -60,10 +70,13 @@ class ShopItem(Base):
 
     @staticmethod
     async def all(session: AsyncSession) -> Sequence["ShopItem"]:
+        """Get all shop items."""
         return (await session.scalars(select(ShopItem))).all()
 
 
 class LoanRequest(Base):
+    """A loan request."""
+
     __tablename__ = "loan_requests"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
@@ -74,15 +87,18 @@ class LoanRequest(Base):
     user: Mapped[User] = relationship(back_populates="loan_requests", lazy="selectin")
 
     async def approve(self, session: AsyncSession) -> None:
+        """Approve this loan request."""
         self.user.balance = User.balance + self.amount
         await session.delete(self)
         await session.commit()
 
     async def reject(self, session: AsyncSession) -> None:
+        """Reject this loan request."""
         await session.delete(self)
         await session.commit()
 
 
 async def create_tables() -> None:
+    """Create the tables."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all, checkfirst=True)

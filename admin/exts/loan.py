@@ -1,3 +1,5 @@
+"""Administrative loan commands."""
+
 from typing import Sequence
 
 from disnake import Embed
@@ -12,14 +14,16 @@ from common.utils import BotCog, error, format_money, success
 
 
 class Loan(BotCog):
+    """Commands for managing loan requests."""
+
     @slash_command()
     async def loan(self, inter: AppCmdInter) -> None:
+        """Manage loan requests."""
         pass
 
     @loan.sub_command()
     async def list(self, inter: AppCmdInter) -> None:
         """List all pending loan requests."""
-
         embed = Embed(title="Pending loan requests")
 
         async with SessionLocal() as session:
@@ -40,7 +44,6 @@ class Loan(BotCog):
         id_: int = Param(name="id", description="The ID of the loan request"),
     ) -> None:
         """Approve a loan request."""
-
         async with SessionLocal() as session:
             request = await session.get(models.LoanRequest, id_)
             if request is None:
@@ -66,7 +69,6 @@ class Loan(BotCog):
         id_: int = Param(name="id", description="The ID of the loan request"),
     ) -> None:
         """Reject a loan request."""
-
         async with SessionLocal() as session:
             request = await session.get(models.LoanRequest, id_)
             if request is None:
@@ -87,4 +89,5 @@ class Loan(BotCog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Loan cog."""
     bot.add_cog(Loan(bot))

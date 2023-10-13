@@ -1,3 +1,5 @@
+"""Loads the Loan cog."""
+
 from typing import Sequence
 
 from disnake import Embed
@@ -12,14 +14,16 @@ from common.utils import format_money, success
 
 
 class Loan(Cog):
+    """Commands for managing loan requests."""
+
     @slash_command()
     async def loan(self, inter: AppCmdInter) -> None:
+        """Manage loan requests."""
         pass
 
     @loan.sub_command()
     async def show(self, inter: AppCmdInter) -> None:
         """Show all your pending loan requests."""
-
         embed = Embed(
             title="Your pending loan requests", color=inter.author.accent_color
         )
@@ -53,7 +57,6 @@ class Loan(Cog):
         application: str = Param(description="The application for your request"),
     ) -> None:
         """Request a loan."""
-
         async with SessionLocal() as session:
             session.add(
                 models.LoanRequest(
@@ -69,4 +72,5 @@ class Loan(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Loan cog."""
     bot.add_cog(Loan())

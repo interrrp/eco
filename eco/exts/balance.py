@@ -1,3 +1,5 @@
+"""Loads the Balance cog."""
+
 import disnake
 from disnake import Embed, Member
 from disnake.ext.commands import Bot, Cog, Param, slash_command
@@ -9,6 +11,8 @@ from common.utils import error, format_money, success
 
 
 class Balance(Cog):
+    """Commands for managing balance."""
+
     @slash_command()
     async def balance(
         self,
@@ -21,7 +25,6 @@ class Balance(Cog):
         ),
     ) -> None:
         """Check the balance of a user."""
-
         if user is None:
             user = inter.author
 
@@ -47,7 +50,6 @@ class Balance(Cog):
         amount: float = Param(description="The amount of money to give them"),
     ) -> None:
         """Give someone some money."""
-
         if inter.author == user:
             await error(inter, "To yourself?")
             return
@@ -83,6 +85,7 @@ class Balance(Cog):
 
     @staticmethod
     def describe_balance(balance: float) -> str:
+        """Describe a balance."""
         if balance < 50.0:
             return "Broke"
         elif balance < 100.0:
@@ -98,4 +101,5 @@ class Balance(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Balance cog."""
     bot.add_cog(Balance())

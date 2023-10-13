@@ -1,3 +1,5 @@
+"""Administrative shop commands."""
+
 from disnake.ext.commands import Bot, Cog, Param, slash_command
 from disnake.interactions import AppCmdInter
 
@@ -7,8 +9,11 @@ from common.utils import success
 
 
 class Shop(Cog):
+    """Commands for managing the shop."""
+
     @slash_command()
     async def shop(self, inter: AppCmdInter) -> None:
+        """Manage the shop."""
         pass
 
     @shop.sub_command()
@@ -20,7 +25,6 @@ class Shop(Cog):
         price: float = Param(description="How much the item costs"),
     ) -> None:
         """Add an item to the shop."""
-
         async with SessionLocal() as session:
             session.add(ShopItem(name=name, description=description, price=price))
             await session.commit()
@@ -29,4 +33,5 @@ class Shop(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Shop cog."""
     bot.add_cog(Shop())

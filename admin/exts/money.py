@@ -1,3 +1,5 @@
+"""Money commands."""
+
 import disnake
 from disnake.ext.commands import Bot, Cog, Param, slash_command
 from disnake.interactions import AppCmdInter
@@ -8,8 +10,11 @@ from common.utils import error, format_money, success
 
 
 class Money(Cog):
+    """Commands for managing money. This should rarely be used."""
+
     @slash_command()
     async def money(self, inter: AppCmdInter) -> None:
+        """Manage money."""
         pass
 
     @money.sub_command()
@@ -20,7 +25,6 @@ class Money(Cog):
         amount: float = Param(description="The amount of money"),
     ) -> None:
         """Add money to a user."""
-
         if amount <= 0.0:
             await error(inter, "Amount must be more than zero")
             return
@@ -40,7 +44,6 @@ class Money(Cog):
         amount: float = Param(description="The amount of money"),
     ) -> None:
         """Subtract money from a user."""
-
         if amount <= 0.0:
             await error(inter, "Amount must be more than zero")
             return
@@ -57,4 +60,5 @@ class Money(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Money cog."""
     bot.add_cog(Money())

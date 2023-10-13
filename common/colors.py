@@ -1,3 +1,5 @@
+"""Commonly used colors."""
+
 from disnake import Color
 
 # These colors are taken from the Gruvbox Material Palette:

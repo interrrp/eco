@@ -1,3 +1,5 @@
+"""Loads the Shop cog."""
+
 from typing import Sequence
 
 from disnake import Embed
@@ -11,10 +13,11 @@ from common.utils import error, format_money, success
 
 
 class Shop(Cog):
+    """Commands for managing the shop."""
+
     @slash_command()
     async def shop(self, inter: AppCmdInter) -> None:
         """Show the shop items."""
-
         embed = Embed(title="Shop", description="Stuff we're selling")
 
         async with SessionLocal() as session:
@@ -34,7 +37,6 @@ class Shop(Cog):
         quantity: int = Param(description="The quantity of the item", default=1, ge=1),
     ) -> None:
         """Buy a shop item."""
-
         async with SessionLocal() as session:
             user = await User.get_or_create(session, inter.author.id)
             item = await session.get(ShopItem, id_)
@@ -61,7 +63,6 @@ class Shop(Cog):
     @slash_command()
     async def inventory(self, inter: AppCmdInter) -> None:
         """Show your inventory."""
-
         embed = Embed(title="Your inventory")
         embed.set_author(
             name=inter.author.display_name, icon_url=inter.author.display_avatar
@@ -87,4 +88,5 @@ class Shop(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Shop cog."""
     bot.add_cog(Shop())

@@ -1,3 +1,5 @@
+"""The main entry point for the bot."""
+
 import asyncio
 
 from disnake import AllowedMentions, Game, Status
@@ -9,6 +11,7 @@ from common.settings import settings
 
 
 async def main() -> None:
+    """Start the bot."""
     logger.info("Creating tables")
     await create_tables()
     logger.info("Finished creating tables")
@@ -25,4 +28,5 @@ async def main() -> None:
     await bot.start(settings.token)
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

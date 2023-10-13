@@ -1,3 +1,5 @@
+"""Games to earn money."""
+
 from random import random, uniform
 
 import disnake
@@ -10,11 +12,12 @@ from common.utils import error, format_money, success
 
 
 class Games(Cog):
+    """Commands for playing games."""
+
     @slash_command()
     @cooldown(1, 30, BucketType.user)
     async def fish(self, inter: AppCmdInter) -> None:
         """Fish and earn money. A small amount of money, but it's money after all."""
-
         if random() < 0.3:
             await error(inter, "No luck...", ephemeral=False)
             return
@@ -34,7 +37,6 @@ class Games(Cog):
         victim: disnake.User = Param(description="The unlucky user"),
     ) -> None:
         """Rob a user."""
-
         if inter.author == victim:
             await error(inter, "You can't rob yourself...")
             return
@@ -62,4 +64,5 @@ class Games(Cog):
 
 
 def setup(bot: Bot) -> None:
+    """Load the Games cog."""
     bot.add_cog(Games())
